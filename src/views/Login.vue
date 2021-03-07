@@ -29,7 +29,10 @@
         </el-form-item>
         <!-- 登录按钮 -->
         <el-form-item class="btn">
-          <el-button type="primary" @click="login">登录</el-button>
+          <el-button type="primary" 
+          @click="login"
+          v-loading.fullscreen.lock="loading"
+          >登录</el-button>
           <el-button type="info" @click="reset">重置</el-button>
         </el-form-item>
       </el-form>
@@ -53,7 +56,8 @@
           password: [
             { required:true, message: '请输入密码', trigger: 'blur'}
           ]
-        }
+        },
+        loading: false
       }
     },
     components: {},
@@ -64,13 +68,14 @@
       login() {
         this.$refs.loginFrom.validate(async valid => {
           if(!valid) return;
+          this.loading = true
           const {data: res} = await this.$http.post('login', this.loginFrom)
           res.meta.status !== 200 ?
           this.$message.error('登录失败') : 
           this.$message.success('登陆成功')
           window,sessionStorage.setItem("token", res.data.token)
+          this.loading = false
           this.$router.push('/home')
-          console.log(res);
         })
       }
     },
